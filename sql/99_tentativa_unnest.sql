@@ -1,0 +1,37 @@
+-- ============================================================================
+-- 99_tentativa_unnest.sql  (NÃO EXECUTAR — registro de aprendizado)
+--
+-- Durante a construção da consulta de linguagens de programação (ver
+-- 06_linguagens.sql), tentamos uma alternativa mais avançada ao UNION ALL
+-- repetido: usar UNNEST sobre um ARRAY de ROWs, para "achatar" várias
+-- colunas booleanas em uma tabela categoria + valor de uma só vez, sem
+-- repetir o bloco SELECT ... UNION ALL uma vez por linguagem.
+--
+-- A ideia (comum em Trino/Presto) seria algo como:
+--
+--   SELECT t.linguagem, COUNT(*) AS quantidade
+--   FROM vw_data_hacker_2021
+--   CROSS JOIN UNNEST(ARRAY[
+--     ROW('SQL', lang_sql),
+--     ROW('Python', lang_python),
+--     ROW('R', lang_r)
+--     -- ... uma linha por linguagem
+--   ]) AS t(linguagem, valor)
+--   WHERE t.valor = '1'
+--   GROUP BY t.linguagem
+--   ORDER BY quantidade DESC;
+--
+-- RESULTADO: falhou com o erro
+--   MISMATCHED_COLUMN_ALIASES: Column alias list has 2 entries but 't' has
+--   1 columns available
+--
+-- DIAGNÓSTICO: essa é uma limitação da versão do engine do Athena usada
+-- neste projeto (Athena engine version 3, baseado em Trino/Presto) — ela
+-- não "achata" automaticamente um ARRAY de ROW em múltiplas colunas dentro
+-- do UNNEST, diferente de outras versões/engines SQL. Não é um erro de
+-- sintaxe do usuário.
+--
+-- DECISÃO: revertido para o padrão UNION ALL (ver 06_linguagens.sql,
+-- 07_cloud.sql e 08_ferramentas_bi.sql), que é mais verboso mas funciona de
+-- forma garantida em qualquer versão do engine.
+-- ============================================================================

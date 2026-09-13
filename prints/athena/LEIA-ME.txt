@@ -1,0 +1,5 @@
+Coloque aqui os prints do Athena:
+- a CREATE OR REPLACE VIEW rodando com sucesso
+- pelo menos um resultado de query de análise (ex: genero ou cargos)
+
+Pode apagar este arquivo depois de colocar os prints reais.
